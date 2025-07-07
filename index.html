@@ -678,7 +678,7 @@
     </div>
     
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <h1 class="text-3xl font-bold text-center mb-6">拼音練習遊戲</h1>
+        <h1 class="text-3xl font-bold text-center mb-6">小三級拼音練習遊戲</h1>
         
         <!-- 選擇與輸入界面 (簡化版) -->
         <div id="input-screen" class="mb-8">
@@ -898,9 +898,9 @@
                     <button id="show-answer" class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow">
                         顯示答案
                     </button>
-                    <!-- 跳過按鈕 -->
-                    <button id="skip-item" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow">
-                        跳過
+                    <!-- 完成按鈕 -->
+                    <button id="skip-item" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow">
+                        完成
                     </button>
                 </div>
             </div>
@@ -1587,6 +1587,31 @@
                 if (!character || !userInput) return false;
                 
                 try {
+                    // 特殊字符的多重正確答案映射表
+                    const specialCharacters = {
+                        '舞': ['wǔ', 'wú'],  // 舞字接受第二聲和第三聲
+                        '一': ['yī', 'yí']   // 一字接受第一聲和第二聲
+                    };
+                    
+                    // 檢查是否為特殊字符
+                    if (specialCharacters[character]) {
+                        const acceptableAnswers = specialCharacters[character];
+                        
+                        // 如果不需要聲調，去除聲調後比較
+                        if (!requireTones) {
+                            const userInputNoTones = this.removeTones(userInput.toLowerCase());
+                            return acceptableAnswers.some(answer => 
+                                this.removeTones(answer.toLowerCase()) === userInputNoTones
+                            );
+                        }
+                        
+                        // 需要聲調時，檢查是否匹配任何一個可接受的答案
+                        return acceptableAnswers.some(answer => 
+                            userInput.toLowerCase() === answer.toLowerCase()
+                        );
+                    }
+                    
+                    // 非特殊字符，使用標準檢查邏輯
                     // 獲取標準拼音
                     const standardPinyin = this.getStandardPinyin(character, requireTones);
                     
@@ -4064,11 +4089,11 @@
         // 預設輸入內容
         function setDefaultContent() {
             // 詞彙模式預設內容 - 請在這裡修改預設詞彙
-            const defaultVocabulary = "散散步\n好處\n糊塗\n舒服\n藝術\n復活節\n從早到晚\n湖光山色\n名不虛傳\n教訓\n全體\n日月潭\n遠離\n市區";
+            const defaultVocabulary = "班級\n舞蹈\n不一定";
             document.getElementById('vocabulary-text').value = defaultVocabulary;
             
             // 文章模式預設內容 - 請在這裡修改預設文章
-            const defaultArticle = "老師常常告訴我們「學無止境」，除了課本，實在還有很多知識得學習呢。\n此時此刻，我們心中既對新生活充滿憧憬和盼望，又對母校依依不捨。";
+            const defaultArticle = "我喜歡和同學玩遊戲。";
             document.getElementById('article-text').value = defaultArticle;
         }
         
